@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Excel to CSV Converter</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.17.3/xlsx.full.min.js"></script>
+</head>
+<body>
+
+<h2>Select an Excel file to convert to CSV</h2>
+<input type="file" id="fileInput" accept=".xlsx, .xls, .xlsm" />
+<button onclick="downloadCSV()">Download CSV</button>
+
+<script>
+    let csvData = "";
+
+    // Function to handle file selection
+    document.getElementById('fileInput').addEventListener('change', (event) => {
+        const file = event.target.files[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                const data = new Uint8Array(e.target.result);
+                const workbook = XLSX.read(data, { type: 'array' });
+
+                // Prompt user to choose a sheet name from the workbook
+                const sheetName = "GW Lab and Elev Table";
+                if (workbook.SheetNames.includes(sheetName)) {
+
+                    const sheet = workbook.Sheets[sheetName];
+                    csvData = XLSX.utils.sheet_to_csv(sheet);
+
+                    const lines = csvData.split('\n');
+
+                    // Regex pattern to identify the start of the desired data
+                    const dataStartPattern = /^(Well ID|Well_ID|,Date,Benzene)/;
+
+                    // Flag to start keeping lines after we hit the pattern
+                    let isDataSection = false;
+                    const filteredLines = [];
+                    let headerRow = "";
+
+                    // Process each line and capture the header and data separately
+                    for (const line of lines) {
+                        if (dataStartPattern.test(line.trim()) && !isDataSection) {
+                            isDataSection = true;  // Start keeping lines after we hit the header
+                            headerRow = line;      // Capture the header row
+                        } else if (isDataSection && line.trim()) {
+                            filteredLines.push(line);  // Add data rows after header
+                        }
+                    }
+
+                    // Add the header row at the top of the filtered data
+                    if (headerRow) {
+                        filteredLines.unshift(headerRow);
+                    }
+
+                    // Convert filtered lines back to CSV format
+                    csvData = filteredLines.join('\n');
+
+                    alert("CSV data is ready. Click 'Download CSV' to save.");
+                } else {
+                    alert("GW Table not found in workbook.");
+                }
+            };
+            reader.readAsArrayBuffer(file);
+        }
+    });
+
+    // Function to download the CSV
+    function downloadCSV() {
+        if (!csvData) {
+            alert("No CSV data to download. Please select an Excel file first.");
+            return;
+        }
+
+        // Create a Blob from the CSV data
+        const blob = new Blob([csvData], { type: 'text/csv;charset=utf-8;' });
+        const url = URL.createObjectURL(blob);
+        
+        // Create a temporary link to download the CSV file
+        const link = document.createElement("a");
+        link.href = url;
+        link.download = "output.csv";
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+    }
+</script>
+
+</body>
+</html>
