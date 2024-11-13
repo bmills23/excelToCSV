@@ -1,5 +1,6 @@
 // This file converts CDLE Excel to CSV 
 
+// Global csvData variable
 let csvData = "";
 
 // Function to handle file selection
@@ -22,6 +23,8 @@ document.getElementById('fileInput').addEventListener('change', (event) => {
                 // Convert sheet to csv in one miraculous line lol
                 csvData = XLSX.utils.sheet_to_csv(sheet);
 
+                console.log(csvData);
+
                 // Split lines by newline characters
                 const lines = csvData.split('\n');
 
@@ -29,20 +32,28 @@ document.getElementById('fileInput').addEventListener('change', (event) => {
                 const customHeader = "Well ID,Date,Benzene,Toluene,Ethyl-Benzene,Xylenes,MTBE,TVPH,TEPH,TOC,TOS,BOS,Well Diameter,Water Table Elevation, Depth to Water, Depth to LNAPL, LNAPL Thickness, GW Column above BOS, GW Above TOS, Well Status";
 
                 // Regex pattern to identify the start of the desired data; e.g. mw-01, MW-02, HRP-01, Lw-08 will all work
-                const dataStartPattern = /^(^[A-Z]+-\d+)/i;
+                const dataStartPattern = /([A-Z]+-\d{1,3}[A-Za-z]*[-\d]*)/gi;
 
                 // Flag to start keeping lines after we hit the pattern
                 let isDataSection = false;
-                const filteredLines = [customHeader];  // Start with custom header
+                const filteredLines = [];  
 
-                // Process each line and capture the header and data separately
+                // Process each line 
                 for (const line of lines) {
                     if (dataStartPattern.test(line.trim()) && !isDataSection) {
                         isDataSection = true;  // Start keeping lines after we hit the header
-                    } else if (isDataSection && line.trim()) {
+                        filteredLines.push(line);
+                        console.log(`Adding ${line}`);
+                    } else if (isDataSection && dataStartPattern.test(line.trim())) {
                         filteredLines.push(line);  // Add data rows after header
+                        console.log(`Adding ${line}`);
+                    } else if (!dataStartPattern.test(line.trim())) {
+                        console.log(`Ignoring ${line}`);
+                        isDataSection = false;
                     }
                 }
+
+                filteredLines.unshift(customHeader);
 
                 // Convert filtered lines back to CSV format
                 csvData = filteredLines.join('\n');
