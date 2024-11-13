@@ -33,7 +33,7 @@ async function processPDF(arrayBuffer) {
 
 function extractCoordinates(text) {
     // Regular expression to match a well ID, northing and easting
-    const wellId = /([A-Z]+-\d+)\s+(\d{7}(?:\.\d+)?)(?:\s+)(\d{6}(?:\.\d+)?)/gi;
+    const wellId = /([A-Z]+-\d{1,3}[A-Za-z]*[-\d]*)\s+(\d{7}(?:\.\d+)?)(?:\s+)(\d{6}(?:\.\d+)?)/gi;
                         
     let match;
     const results = [];
