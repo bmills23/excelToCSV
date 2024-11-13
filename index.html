@@ -4,14 +4,44 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Excel to CSV Converter</title>
+    <link rel="stylesheet" href="styles.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.17.3/xlsx.full.min.js" defer></script>
     <script src="index.js" defer></script>
+    <script src="csvBore.js" defer></script>
 </head>
 <body>
 
 <h2>Select an Excel file to convert to CSV</h2>
-<input type="file" id="fileInput" accept=".xlsx, .xls, .xlsm" />
-<button onclick="downloadCSV()">Download CSV</button>
+
+<section>
+    <div class="input">
+        <h3>Upload CDLE Excel File to Parse GW Data</h3>
+        <input type="file" id="fileInput" accept=".xlsx, .xls, .xlsm" />
+    </div>
+    <div class="input">
+        <h3>Upload Boring Logs with Northings/Eastings to Append to CSV Or...</h3>
+        <input type="file" id="boringLogs" accept=".pdf" /> 
+    </div>
+
+    <div class="input">
+       <!-- Input section for Well ID, Northing, and Easting -->
+        <h3>Enter Northing and Easting Coordinates for a Specific Well</h3>
+        <label for="wellId">Well ID:</label>
+        <input type="text" id="wellId" placeholder="Enter Well ID" />
+
+        <label for="northing">Northing:</label>
+        <input type="number" id="northing" placeholder="Enter Northing" />
+
+        <label for="easting">Easting:</label>
+        <input type="number" id="easting" placeholder="Enter Easting" />
+
+        <button onclick="addCoordinates()">Add Coordinates to CSV</button>
+    </div>
+
+    <div>
+        <button onclick="downloadCSV()">Download CSV</button>
+    </div>
+</section>
 
 <script>
     

@@ -1,3 +1,5 @@
+// This file converts CDLE Excel to CSV 
+
 let csvData = "";
 
 // Function to handle file selection
