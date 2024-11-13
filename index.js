@@ -29,7 +29,7 @@ document.getElementById('fileInput').addEventListener('change', (event) => {
                 const lines = csvData.split('\n');
 
                 // Custom Header instead of parsing data from document
-                const customHeader = "Well ID,Date,Benzene,Toluene,Ethyl-Benzene,Xylenes,MTBE,TVPH,TEPH,TOC,TOS,BOS,Well Diameter,Water Table Elevation, Depth to Water, Depth to LNAPL, LNAPL Thickness, GW Column above BOS, GW Above TOS, Well Status";
+                const customHeader = "Well ID,Date,Benzene,Toluene,Ethyl-Benzene,Xylenes,MTBE,TVPH,TEPH,TOC,TOS,BOS,Well Diameter,Water Table Elevation, Depth to Water, Depth to LNAPL, LNAPL Thickness, GW Column above BOS, GW Above TOS, Well Status, Northing, Easting";
 
                 // Regex pattern to identify the start of the desired data; e.g. mw-01, MW-02, HRP-01, Lw-08 will all work
                 const dataStartPattern = /([A-Z]+-\d{1,3}[A-Za-z]*[-\d]*)/gi;

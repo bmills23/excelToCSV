@@ -32,7 +32,7 @@ async function processPDF(arrayBuffer) {
 }
 
 function extractCoordinates(text) {
-    // Regular expression to match a well ID
+    // Regular expression to match a well ID, northing and easting
     const wellId = /([A-Z]+-\d+)\s+(\d{7}(?:\.\d+)?)(?:\s+)(\d{6}(?:\.\d+)?)/gi;
                         
     let match;
@@ -42,13 +42,11 @@ function extractCoordinates(text) {
 
         console.log(match);
 
-        const borelog = match[0];
         const wellId = match[1];
         const northing = match[2];
         const easting = match[3];
 
         console.log(`Extracting data from Well: ${wellId}`); // Debug log
-        console.log(`Borelog: ${borelog}`); 
 
         results.push({ wellId, northing, easting });
     }
@@ -60,22 +58,19 @@ function mergeResults(results) {
     // Append Northing and Easting to each row where Well ID matches
     const lines = csvData.split('\n');
 
-    for (let i = 0; i < results.lenght; i++) {
-        const wellId = results[i].wellId;
-        const northing = results[i].northing;
-        const easting = results[i].easting;
-
-        const updatedLines = lines.map((line) => {
+    // Loop through each result and add northing/easting if the well ID matches
+    for (let i = 0; i < results.length; i++) {  
+        const { wellId, northing, easting } = results[i];
+        
+        // Update lines by appending Northing and Easting to matching Well ID rows
+        lines.forEach((line, index) => {
             if (line.startsWith(wellId)) {
-                return `${line},${northing},${easting}`;  // Add Northing and Easting columns to the row
+                lines[index] = `${line},${northing},${easting}`;  // Add Northing and Easting columns
+                console.log(`Updated Well ID ${wellId} with Northing: ${northing} and Easting: ${easting}`);
             }
-            return line;
         });
-    
-        csvData = updatedLines.join('\n');
-    
-        // Update the textarea display
-        document.getElementById('csvEditor').value = csvData;
-        alert(`Added Northing and Easting for Well ID ${wellId}.`);
     }
+
+    csvData = lines.join('\n');
+    alert('Northing and Easting coordinates have been added to matching wells.');
 }
